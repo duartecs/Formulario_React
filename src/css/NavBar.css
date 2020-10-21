@@ -1,0 +1,24 @@
+ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  background-color: dimgray;
+  margin: 0;
+  padding: 0;
+  height: 25px;
+}
+
+li {
+  list-style-type: none;
+  margin-right: 15px;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+li:hover {
+  background-color: gainsboro;
+}

@@ -1,0 +1,95 @@
+.Titulo {
+  display: flex;
+  justify-content: center;
+}
+
+.Form {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 15px;
+  width: 50%;
+  margin: auto;
+}
+
+.FormUser {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+.FormUser input{
+  width: 70%;
+  margin-right: 25px;
+}
+
+.labelUser {
+  padding-right: 5px;
+}
+
+.Alerta {
+  color: red;
+  margin: 0;
+  font-size: 14px;
+}
+
+.Bottons {
+  display: flex;
+  justify-content: center;
+}
+
+.Botao {
+  margin: 10px;
+  background-color: grey;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+#BotaoCadastro {
+  background-color: green;
+}
+
+#BotaoCancelar {
+  background-color: darkblue;
+}
+
+.Resposta {
+  justify-content: center;
+  color: white;
+}
+
+.Cards{
+  width: 400px;
+  margin-left: 15px;
+}
+.DisplayButtons{
+  margin-bottom: 15px;
+  margin-right: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.CardUser {
+  border-radius: 8px;
+  border: 1px solid grey;
+  width: 350px;
+  padding-left: 25px;
+}
+
+.Botao.adm{
+  margin: 5px;
+}
+
+.PainelADM {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}

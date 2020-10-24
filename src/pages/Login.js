@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import "../css/Form.css";
 import NavBar from "../Components/NavBar";
+import Form from "../Components/Form";
 import axios from "axios";
 
 const valoresLogin = {
@@ -69,42 +70,37 @@ const PagesLogin = () => {
         {"Login/Senha invalido"}
       </p>
       <h1 className="Titulo">LOGIN</h1>
-      <form onSubmit={onSubmit}>
-        <div className="Form">
-          <label htmlFor="login">Login:</label>
-          <input
-            id="login"
-            name="login"
-            type="text"
-            onChange={onChange}
-            value={valores.login}
-          ></input>
-        </div>
-        <div className="Form">
-          <label htmlFor="senha">Senha:</label>
-          <input
-            id="senha"
-            name="senha"
-            type="password"
-            onChange={onChange}
-            value={valores.senha}
-          ></input>
-        </div>
-        <div className="Bottons">
-          <button
-            className="Botao"
-            id="BotaoLogin"
-            type="submit"
-            disabled={displayButton.isDisable}
-            style={displayButton}
-          >
-            Entrar
-          </button>
-          <Link to="/cadastro" className="Botao" id="BotaoCadastro">
-            Novo cadastro
-          </Link>
-        </div>
-      </form>
+      <Form
+        name={"login"}
+        type={"text"}
+        onChange={onChange}
+        value={valores.login}
+        onSubmit={onSubmit}
+        text={"Login:"}
+      />
+      <Form
+        name={"senha"}
+        type={"password"}
+        onChange={onChange}
+        value={valores.senha}
+        onSubmit={onSubmit}
+        text={"Senha:"}
+      />
+      <div className="Bottons">
+        <button
+          className="Botao"
+          id="BotaoLogin"
+          type="submit"
+          disabled={displayButton.isDisable}
+          style={displayButton}
+          onClick={onSubmit}
+        >
+          Entrar
+        </button>
+        <Link to="/cadastro" className="Botao" id="BotaoCadastro">
+          Novo cadastro
+        </Link>
+      </div>
     </div>
   );
 };

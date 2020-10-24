@@ -99,13 +99,15 @@ const PagesPerfil = () => {
     }
     //Senha ok e email ok realiza o post
     if (statusPassword === true && statusEmail === true) {
-      const newValores = util.preRequestPUT(valores);
+      const newValue = util.preRequestPUT(valores)
       axios
-        .put("http://localhost:5000/cadastro", newValores, {
+        .put("http://localhost:5000/cadastro", newValue, {
           headers: { autenticate: token },
         })
         .then((response) => {
-          cancel();
+          setValores(newValue);
+          newValue.email === undefined && setValores({...valores, email: valoresUsuario.email})
+          cancel(false);
         })
         .catch((erro) => {
           console.log(erro);
@@ -115,9 +117,11 @@ const PagesPerfil = () => {
     }
   };
 
-  const cancel = () => {
-    util.editModel(valores);
-    setValores(valoresUsuario);
+  const cancel = (toggle) => {
+    if(toggle){
+      util.editModel(valores);
+      setValores(valoresUsuario);
+    }
     setDisplayButton({ display: "none" });
     setDisplay({ isDisable: true });
     setDisplayEditButton({ display: "flex", background: "darkblue" });
@@ -222,7 +226,7 @@ const PagesPerfil = () => {
             className="Botao"
             id="BotaoCancelar"
             type="reset"
-            onClick={cancel}
+            onClick={()=>cancel(true)}
             style={displayButton}
           >
             Cancelar

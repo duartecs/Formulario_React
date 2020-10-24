@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import util from "../Util/VerifyObject";
 import mascaraCPF from "../Util/MascaraCPF"
-import NavBar from "./NavBar";
+import NavBar from "../Components/NavBar";
 
 import "../css/Form.css";
 

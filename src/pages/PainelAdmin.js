@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import NavBar from "./NavBar";
-import UserCard from "./UserCard";
+import NavBar from "../Components/NavBar";
+import UserCard from "../Components/UserCard";
 import "../css/Form.css";
 
 const PagesPainelAdmin = () => {

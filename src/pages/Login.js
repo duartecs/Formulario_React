@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import "../css/Form.css";
-import NavBar from "./NavBar";
+import NavBar from "../Components/NavBar";
 import axios from "axios";
 
 const valoresLogin = {

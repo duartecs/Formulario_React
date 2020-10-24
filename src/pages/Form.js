@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import "../css/Form.css";
-import mascaraCPF from "../Util/MascaraCPF"
-import NavBar from "./NavBar";
+import mascaraCPF from "../Util/MascaraCPF";
+import NavBar from "../Components/NavBar";
+import Form from "../Components/Form";
 
 //variaveis de controle
 var statusPassword = false;
@@ -45,6 +46,8 @@ const PagesForm = () => {
     //setar os novos valores do state
     setValores({ ...valores, [name]: value });
 
+    console.log(valores);
+
     //verificar se existe algum campo em branco
     for (var element in valores) {
       valores[element] !== "" ? (count = count + 1) : (count = 0);
@@ -56,10 +59,10 @@ const PagesForm = () => {
       : (count = 0);
   };
 
-  const onChangeCPF = (ev) =>{
+  const onChangeCPF = (ev) => {
     const { name, value } = ev.target;
     setValores({ ...valores, [name]: mascaraCPF(value) });
-  }
+  };
 
   const onSubmit = (ev) => {
     ev.preventDefault();
@@ -113,99 +116,90 @@ const PagesForm = () => {
         {resposta}
       </p>
       <h1 className="Titulo">PAGE FORM</h1>
-      <form onSubmit={onSubmit}>
-        <div className="Form">
-          <label htmlFor="login">Login:</label>
-          <input
-            name="login"
-            type="text"
-            onChange={onChange}
-            value={valores.login}
-          />
-        </div>
-        <div className="Form">
-          <label htmlFor="senha">Senha:</label>
-          <input
-            name="senha"
-            type="password"
-            onChange={onChange}
-            value={valores.senha}
-          />
-        </div>
-        <div className="Form">
-          <label htmlFor="confirmar_senha">Confirme a senha:</label>
-          <input
-            name="confirmar_senha"
-            type="password"
-            onChange={onChange}
-            value={valores.confirmar_senha}
-          />
-          <p className="Alerta" style={displayPassword}>
-            Os campos de senha devem ser iguais, favor digite novamente!
-          </p>
-        </div>
-        <div className="Form">
-          <label htmlFor="nome">Nome:</label>
-          <input
-            name="nome"
-            type="text"
-            onChange={onChange}
-            value={valores.nome}
-          />
-        </div>
-        <div className="Form">
-          <label htmlFor="cpf">CPF:</label>
-          <input
-            name="cpf"
-            type="text"
-            maxLength="14"
-            placeholder="Somente numeros"
-            onChange={onChangeCPF}
-            value={valores.cpf}
-          />
-        </div>
-        <div className="Form">
-          <label htmlFor="email">E-mail:</label>
-          <input
-            name="email"
-            type="email"
-            onChange={onChange}
-            value={valores.email}
-          />
-        </div>
-        <div className="Form">
-          <label htmlFor="confirmar_email">Confirme o e-mail:</label>
-          <input
-            name="confirmar_email"
-            type="email"
-            onChange={onChange}
-            value={valores.confirmar_email}
-          />
-          <p className="Alerta" id="alerta-email" style={displayEmail}>
-            Os campos de e-mail devem ser iguais, favor digite novamente!
-          </p>
-        </div>
-        <div className="Form">
-          <label htmlFor="idade">Idade:</label>
-          <input
-            name="idade"
-            type="number"
-            onChange={onChange}
-            value={valores.idade}
-          />
-        </div>
-        <div className="Bottons">
-          <button
-            className="Botao"
-            id="BotaoSubmmit"
-            type="submit"
-            disabled={displayButton.isDisable}
-            style={displayButton}
-          >
-            Cadastrar
-          </button>
-        </div>
-      </form>
+      <Form
+        name={"login"}
+        type={"text"}
+        onChange={onChange}
+        value={valores.login}
+        onSubmit={onSubmit}
+        text={"Login:"}
+      />
+      <Form
+        name={"senha"}
+        type={"password"}
+        onChange={onChange}
+        value={valores.senha}
+        onSubmit={onSubmit}
+        text={"Senha:"}
+      />
+      <Form
+        name={"confirmar_senha"}
+        type={"password"}
+        onChange={onChange}
+        value={valores.confirmar_senha}
+        onSubmit={onSubmit}
+        text={"Confirme a senha:"}
+      />
+      <p className="Alerta" style={displayPassword}>
+        Os campos de senha devem ser iguais, favor digite novamente!
+      </p>
+      <Form
+        name={"nome"}
+        type={"text"}
+        onChange={onChange}
+        value={valores.nome}
+        onSubmit={onSubmit}
+        text={"Nome:"}
+      />
+      <Form
+        name={"cpf"}
+        type={"text"}
+        onChange={onChangeCPF}
+        value={valores.cpf}
+        onSubmit={onSubmit}
+        text={"CPF:"}
+        maxLength={"14"}
+        placeholder={"Somente numeros"}
+      />
+      <Form
+        name={"email"}
+        type={"email"}
+        onChange={onChange}
+        value={valores.email}
+        onSubmit={onSubmit}
+        text={"E-mail:"}
+      />
+      <Form
+        name={"confirmar_email"}
+        type={"email"}
+        onChange={onChange}
+        value={valores.confirmar_email}
+        onSubmit={onSubmit}
+        text={"Confirme o e-mail:"}
+      />
+      <p className="Alerta" id="alerta-email" style={displayEmail}>
+        Os campos de e-mail devem ser iguais, favor digite novamente!
+      </p>
+      <Form
+        name={"idade"}
+        type={"number"}
+        onChange={onChange}
+        value={valores.idade}
+        onSubmit={onSubmit}
+        text={"Idade:"}
+      />
+      <div className="Bottons">
+        <button
+          className="Botao"
+          id="BotaoSubmmit"
+          type="submit"
+          disabled={displayButton.isDisable}
+          style={displayButton}
+          onClick={onSubmit}
+        >
+          Cadastrar
+        </button>
+      </div>
     </div>
   );
 };

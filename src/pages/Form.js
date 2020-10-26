@@ -3,7 +3,9 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import "../css/Form.css";
 import mascaraCPF from "../Util/MascaraCPF";
+import mascaraIdade from "../Util/MascaraIdade";
 import NavBar from "../Components/NavBar";
+import Message from "../Components/Messages";
 import Form from "../Components/Form";
 
 //variaveis de controle
@@ -44,9 +46,13 @@ const PagesForm = () => {
     const { name, value } = ev.target;
 
     //setar os novos valores do state
-    setValores({ ...valores, [name]: value });
-
-    console.log(valores);
+    if (ev.target.name === "cpf") {
+      setValores({ ...valores, [name]: mascaraCPF(value) });
+    } else if (ev.target.name === "idade") {
+      setValores({ ...valores, [name]: mascaraIdade(value) });
+    } else {
+      setValores({ ...valores, [name]: value });
+    }
 
     //verificar se existe algum campo em branco
     for (var element in valores) {
@@ -57,11 +63,6 @@ const PagesForm = () => {
     count === 8
       ? setDisplayButton({ backgroundColor: "blue", isDisable: false })
       : (count = 0);
-  };
-
-  const onChangeCPF = (ev) => {
-    const { name, value } = ev.target;
-    setValores({ ...valores, [name]: mascaraCPF(value) });
   };
 
   const onSubmit = (ev) => {
@@ -112,9 +113,12 @@ const PagesForm = () => {
   return (
     <div>
       <NavBar />
-      <p className="Resposta" style={displayResposta}>
-        {resposta}
-      </p>
+      <Message
+        type={"fixed"}
+        display={displayResposta}
+        className={"Resposta"}
+        message={resposta}
+      />
       <h1 className="Titulo">PAGE FORM</h1>
       <Form
         name={"login"}
@@ -140,9 +144,12 @@ const PagesForm = () => {
         onSubmit={onSubmit}
         text={"Confirme a senha:"}
       />
-      <p className="Alerta" style={displayPassword}>
-        Os campos de senha devem ser iguais, favor digite novamente!
-      </p>
+      <Message
+        type={"fixed"}
+        display={displayPassword}
+        className={"Alerta"}
+        message={"Os campos de senha devem ser iguais, favor digite novamente!"}
+      />
       <Form
         name={"nome"}
         type={"text"}
@@ -154,7 +161,7 @@ const PagesForm = () => {
       <Form
         name={"cpf"}
         type={"text"}
-        onChange={onChangeCPF}
+        onChange={onChange}
         value={valores.cpf}
         onSubmit={onSubmit}
         text={"CPF:"}
@@ -177,15 +184,21 @@ const PagesForm = () => {
         onSubmit={onSubmit}
         text={"Confirme o e-mail:"}
       />
-      <p className="Alerta" id="alerta-email" style={displayEmail}>
-        Os campos de e-mail devem ser iguais, favor digite novamente!
-      </p>
+      <Message
+        type={"fixed"}
+        display={displayEmail}
+        className={"Alerta"}
+        message={
+          "Os campos de e-mail devem ser iguais, favor digite novamente!"
+        }
+      />
       <Form
         name={"idade"}
-        type={"number"}
+        type={"text"}
         onChange={onChange}
         value={valores.idade}
         onSubmit={onSubmit}
+        maxLength={"2"}
         text={"Idade:"}
       />
       <div className="Bottons">

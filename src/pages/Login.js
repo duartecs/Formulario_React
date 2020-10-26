@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import "../css/Form.css";
 import NavBar from "../Components/NavBar";
+import Message from "../Components/Messages";
 import Form from "../Components/Form";
 import axios from "axios";
 
@@ -66,9 +67,12 @@ const PagesLogin = () => {
   return (
     <div>
       <NavBar />
-      <p className="Resposta" style={displayResposta}>
-        {"Login/Senha invalido"}
-      </p>
+      <Message
+        type={"fixed"}
+        display={displayResposta}
+        className={"Resposta"}
+        message={"Login/Senha invalido"}
+      />
       <h1 className="Titulo">LOGIN</h1>
       <Form
         name={"login"}

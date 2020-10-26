@@ -5,7 +5,9 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import util from "../Util/VerifyObject";
 import mascaraCPF from "../Util/MascaraCPF";
+import mascaraIdade from "../Util/MascaraIdade";
 import NavBar from "../Components/NavBar";
+import Message from "../Components/Messages";
 import Form from "../Components/Form";
 
 import "../css/Form.css";
@@ -57,12 +59,13 @@ const PagesPerfil = () => {
     const { name, value } = ev.target;
 
     //setar os novos valores do state
-    setValores({ ...valores, [name]: value });
-  };
-
-  const onChangeCPF = (ev) => {
-    const { name, value } = ev.target;
-    setValores({ ...valores, [name]: mascaraCPF(value) });
+    if (ev.target.name === "cpf") {
+      setValores({ ...valores, [name]: mascaraCPF(value) });
+    } else if (ev.target.name === "idade") {
+      setValores({ ...valores, [name]: mascaraIdade(value) });
+    } else {
+      setValores({ ...valores, [name]: value });
+    }
   };
 
   const editPerfil = () => {
@@ -86,7 +89,7 @@ const PagesPerfil = () => {
         statusPassword = false;
       }
     }
-    if (valores.email === "" || valores.email === location.state.user.email) {
+    if (valores.email === "") {
       statusEmail = true;
     } else {
       //validar o email
@@ -164,14 +167,17 @@ const PagesPerfil = () => {
           onSubmit={putPerfil}
           text={"Confirme a nova senha:"}
         />
-        <p className="Alerta" style={displayPassword}>
-          Os campos de senha devem ser iguais, favor digite novamente!
-        </p>
       </div>
+      <Message
+        type={"fixed"}
+        display={displayPassword}
+        className={"Alerta"}
+        message={"Os campos de senha devem ser iguais, favor digite novamente!"}
+      />
       <Form
         name={"cpf"}
         type={"text"}
-        onChange={onChangeCPF}
+        onChange={onChange}
         value={valores.cpf}
         onSubmit={putPerfil}
         text={"CPF:"}
@@ -197,16 +203,20 @@ const PagesPerfil = () => {
           onSubmit={putPerfil}
           text={"Confirme o novo e-mail:"}
         />
-        <p className="Alerta" id="alerta-email" style={displayEmail}>
-          Os campos de e-mail devem ser iguais, favor digite novamente!
-        </p>
       </div>
+      <Message
+        type={"fixed"}
+        display={displayEmail}
+        className={"Alerta"}
+        message={"Os campos de e-mail devem ser iguais, favor digite novamente!"}
+      />
       <Form
         name={"idade"}
-        type={"number"}
+        type={"text"}
         onChange={onChange}
         value={valores.idade}
         onSubmit={putPerfil}
+        maxLength={"2"}
         text={"Idade:"}
         isDisable={display.isDisable}
       />

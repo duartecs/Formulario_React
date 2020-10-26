@@ -19,18 +19,22 @@
   padding-bottom: 5px;
   padding-top: 5px;
 }
-.FormUser input{
+
+.FormUser input {
   width: 70%;
   margin-right: 25px;
 }
 
-.labelUser {
+.FormUser label {
   padding-right: 5px;
 }
 
 .Alerta {
+  display: flex;
+  width: 50%;
+  margin: auto;
+  padding-bottom: 15px;
   color: red;
-  margin: 0;
   font-size: 14px;
 }
 
@@ -65,11 +69,12 @@
   color: white;
 }
 
-.Cards{
+.Cards {
   width: 400px;
   margin-left: 15px;
 }
-.DisplayButtons{
+
+.DisplayButtons {
   margin-bottom: 15px;
   margin-right: 25px;
   display: flex;
@@ -84,7 +89,7 @@
   padding-left: 25px;
 }
 
-.Botao.adm{
+.Botao.adm {
   margin: 5px;
 }
 

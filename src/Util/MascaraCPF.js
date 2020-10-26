@@ -1,5 +1,4 @@
 const mascaraCPF = (cpf) => {
-  console.log(cpf)
   var onlyNumbers = [];
   var cpfFormatado = [];
   for (var x = 0; x < cpf.length; x++) {
@@ -7,8 +6,6 @@ const mascaraCPF = (cpf) => {
       onlyNumbers.push(cpf[x]);
     }
   }
-  console.log(onlyNumbers)
-  console.log(cpfFormatado)
   for (var y = 0; y < onlyNumbers.length; y++) {
     if (y < 3) {
       cpfFormatado[y] = onlyNumbers[y];

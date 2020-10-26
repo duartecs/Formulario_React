@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import util from "../Util/VerifyObject";
-import mascaraCPF from "../Util/MascaraCPF"
+import mascaraCPF from "../Util/MascaraCPF";
 import axios from "axios";
 
 const valoresForm = {
@@ -14,18 +14,22 @@ const valoresForm = {
   email: "",
 };
 
- const UserCard = (props) => {
+const UserCard = (props) => {
   const [valores, setValores] = useState(valoresForm);
   const [token, setToken] = useState("");
-  const [displayButton, setDisplayButton] = useState({display: "none"});
+  const [displayButton, setDisplayButton] = useState({ display: "none" });
 
   useEffect(() => {
-    if(props.editCard){
-      setDisplayButton({display: "flex", backgroundColor: "darkblue", isDisable: false})
-    }else{
-      setDisplayButton({display: "none"})
+    if (props.editCard) {
+      setDisplayButton({
+        display: "flex",
+        backgroundColor: "darkblue",
+        isDisable: false,
+      });
+    } else {
+      setDisplayButton({ display: "none" });
     }
-    props.valores.senha = '';
+    props.valores.senha = "";
     setValores(props.valores);
     setToken(props.token);
   }, [props]);
@@ -34,37 +38,40 @@ const valoresForm = {
     const { name, value } = ev.target;
     setValores({ ...valores, [name]: value });
   };
-  const onChangeCPF = (ev) =>{
+  const onChangeCPF = (ev) => {
     const { name, value } = ev.target;
     setValores({ ...valores, [name]: mascaraCPF(value) });
-  }
+  };
 
   const onSubmit = (ev) => {
     ev.preventDefault();
 
-    if(
-      valores.login !== '' &&
-      valores.nome !== '' &&
-      valores.cpf !== '' &&
-      valores.idade !== '' &&
-      valores.email!== ''){
-        const newValores = util.preRequestPUT(util.verifyObject(valoresForm,valores));
-        console.log(newValores);
-        axios
-          .put("http://localhost:5000/cadastro", newValores, {
-            headers: { autenticate: token },
-          })
-          .then((response) => {
-            console.log(response)
-            props.boxMessage("Cadastro atualizado","green")
-            props.editPerfil();
-          })
-          .catch((erro) => {
-            console.log(erro);
-          });
-      }else{
-        console.log("Favor preencher os campos")
-      }
+    if (
+      valores.login !== "" &&
+      valores.nome !== "" &&
+      valores.cpf !== "" &&
+      valores.idade !== "" &&
+      valores.email !== ""
+    ) {
+      const newValores = util.preRequestPUT(
+        util.verifyObject(valoresForm, valores)
+      );
+      console.log(newValores);
+      axios
+        .put("http://localhost:5000/cadastro", newValores, {
+          headers: { autenticate: token },
+        })
+        .then((response) => {
+          console.log(response);
+          props.boxMessage("Cadastro atualizado", "green");
+          props.editPerfil();
+        })
+        .catch((erro) => {
+          console.log(erro);
+        });
+    } else {
+      console.log("Favor preencher os campos");
+    }
   };
   return (
     <div className="CardUser">

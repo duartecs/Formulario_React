@@ -39,7 +39,24 @@ const AccessDB = {
           headers: { authenticate: token },
         })
         .then((res) => {
-          resolve("Cadastro atualizado")
+          resolve(true);
+        })
+        .catch((erro) => {
+          console.log(erro);
+          reject(erro);
+        });
+    });
+  },
+
+  deleteUser: (token, _id) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .delete("http://localhost:5000/cadastro", {
+          params: { _id },
+          headers: { authenticate: token },
+        })
+        .then((res) => {
+          resolve(true);
         })
         .catch((erro) => {
           console.log(erro);

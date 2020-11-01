@@ -1,17 +1,29 @@
 import React from "react";
 
-const Form = (props) => {
+const Form = ({
+  name,
+  className,
+  type,
+  text,
+  value,
+  onChange,
+  onSubmit,
+  maxLength,
+  placeholder,
+  isDisable
+}
+) => {
   return (
-    <form onSubmit={props.onSubmit} className="Form">
-      <label htmlFor={props.name}>{props.text}</label>
+    <form onSubmit={onSubmit} className={className}>
+      <label htmlFor={name}>{text}</label>
       <input
-        name={props.name}
-        type={props.type}
-        value={props.value}
-        placeholder={props.placeholder}
-        maxLength={props.maxLength}
-        onChange={props.onChange}
-        disabled={props.isDisable}
+        name={name}
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        onChange={onChange}
+        disabled={isDisable}
       />
     </form>
   );
@@ -19,6 +31,7 @@ const Form = (props) => {
 
 Form.defaultProps = {
   isDisable: false,
+  className: Form,
 };
 
 export default Form;

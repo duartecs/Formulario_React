@@ -55,12 +55,16 @@ const PagesPerfil = () => {
     const { name, value } = ev.target;
 
     //setar os novos valores do state
-    if (ev.target.name === "cpf") {
-      setValores({ ...valores, [name]: mascaraCPF(value) });
-    } else if (ev.target.name === "idade") {
-      setValores({ ...valores, [name]: mascaraIdade(value) });
-    } else {
-      setValores({ ...valores, [name]: value });
+    switch (ev.target.name) {
+      case "cpf":
+        setValores({ ...valores, [name]: mascaraCPF(value) });
+        break;
+      case "idade":
+        setValores({ ...valores, [name]: mascaraIdade(value) });
+        break;
+      default:
+        setValores({ ...valores, [name]: value });
+        break;
     }
   };
 

@@ -1,39 +1,24 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useHistory } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useContext, useEffect } from "react";
 import NavBar from "../Components/NavBar";
 import UserCard from "../Components/UserCard";
-import Message from "../Components/Messages"
+import Message from "../Components/Messages";
+import StoreContext from "../Components/Context";
+import AccessDB from "../Service/AccessDB";
 import "../css/Form.css";
 
 const PagesPainelAdmin = () => {
+  const { token } = useContext(StoreContext);
+
   const [usuarios, setUsuarios] = useState([]);
-  const [token, setToken] = useState();
   const [displayResposta, setDisplayResposta] = useState({ display: "none" });
   const [resposta, setResposta] = useState("");
   const [editCard, setEditCard] = useState("");
   const [toggle, setToggle] = useState(false);
 
-  const history = useHistory();
-  const location = useLocation();
-
-  if (location.state === undefined || location.state.user.login !== "admin") {
-    history.push({ pathname: "/login" });
-  }
-
-  if (token === undefined) {
-    setToken(location.state.token);
-  }
-
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/cadastro", {
-        headers: { authenticate: token },
-      })
-      .then((response) => {
-        setUsuarios(response.data);
+    AccessDB.findUser(token)
+      .then((res) => {
+        setUsuarios(res);
       })
       .catch((erro) => {
         console.log(erro);
@@ -44,17 +29,10 @@ const PagesPainelAdmin = () => {
     if (user.login === "admin") {
       boxMessage("Não é possivel excluir o ADMIN BOLADO!", "red");
     } else {
-      const _id = user._id;
-      axios
-        .delete("http://localhost:5000/cadastro", {
-          params: { _id },
-          headers: { authenticate: token },
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            boxMessage("Usuario excluido com Sucesso!", "green");
-            setToggle(!toggle);
-          }
+      AccessDB.deleteUser(token, user._id)
+        .then((res) => {
+          boxMessage("Usuario excluido com Sucesso!", "green");
+          setToggle(!toggle);
         })
         .catch((erro) => {
           console.log(erro);
@@ -63,19 +41,14 @@ const PagesPainelAdmin = () => {
   };
 
   const editPerfil = (user) => {
-    if (editCard === "") {
-      setEditCard(user._id);
-    } else {
-      setEditCard("");
-      setToggle(!toggle);
-    }
+    editCard === "" ? setEditCard(user._id) : setEditCard("")
   };
 
   const boxMessage = (message, color) => {
-    if(message === "reset"){
+    if (message === "reset") {
       setResposta("");
       setDisplayResposta({ display: "none" });
-    }else{
+    } else {
       setResposta(message);
       setDisplayResposta({ display: "flex", backgroundColor: color });
     }
@@ -84,16 +57,22 @@ const PagesPainelAdmin = () => {
   return (
     <>
       <NavBar />
-      <Message type={"temp"} display={displayResposta} className={"Resposta"} message={resposta} boxMessage={boxMessage}/>
+      <Message
+        type={"temp"}
+        display={displayResposta}
+        className={"Resposta"}
+        message={resposta}
+        boxMessage={boxMessage}
+      />
       <h1>Painel ADMIN</h1>
       <div className="PainelADM">
         {usuarios.map((user) => (
           <div className="Cards" key={user._id}>
             <UserCard
-              valores={user}
+              user={user}
               editCard={editCard === user._id ? true : false}
-              token={token}
               editPerfil={editPerfil}
+              setToggle={setToggle}
               boxMessage={boxMessage}
             />
             <div className="DisplayButtons">

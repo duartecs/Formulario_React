@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import StoreContext from "../Components/Context";
+import AccessDB from "../Service/AccessDB";
+import Form from "../Components/Form";
 import util from "../Util/VerifyObject";
 import mascaraCPF from "../Util/MascaraCPF";
-import axios from "axios";
+import mascaraIdade from "../Util/MascaraIdade";
 
 const valoresForm = {
   _id: "",
@@ -14,13 +16,14 @@ const valoresForm = {
   email: "",
 };
 
-const UserCard = (props) => {
+const UserCard = ({ user, editCard, editPerfil, boxMessage, setToggle }) => {
+  const { token } = useContext(StoreContext);
+
   const [valores, setValores] = useState(valoresForm);
-  const [token, setToken] = useState("");
   const [displayButton, setDisplayButton] = useState({ display: "none" });
 
   useEffect(() => {
-    if (props.editCard) {
+    if (editCard) {
       setDisplayButton({
         display: "flex",
         backgroundColor: "darkblue",
@@ -29,18 +32,24 @@ const UserCard = (props) => {
     } else {
       setDisplayButton({ display: "none" });
     }
-    props.valores.senha = "";
-    setValores(props.valores);
-    setToken(props.token);
-  }, [props]);
+    user.senha = "";
+    setValores(user);
+  }, [editCard, user]);
 
   const onChange = (ev) => {
     const { name, value } = ev.target;
-    setValores({ ...valores, [name]: value });
-  };
-  const onChangeCPF = (ev) => {
-    const { name, value } = ev.target;
-    setValores({ ...valores, [name]: mascaraCPF(value) });
+
+    switch (ev.target.name) {
+      case "cpf":
+        setValores({ ...valores, [name]: mascaraCPF(value) });
+        break;
+      case "idade":
+        setValores({ ...valores, [name]: mascaraIdade(value) });
+        break;
+      default:
+        setValores({ ...valores, [name]: value });
+        break;
+    }
   };
 
   const onSubmit = (ev) => {
@@ -57,14 +66,11 @@ const UserCard = (props) => {
         util.verifyObject(valoresForm, valores)
       );
       console.log(newValores);
-      axios
-        .put("http://localhost:5000/cadastro", newValores, {
-          headers: { authenticate: token },
-        })
-        .then((response) => {
-          console.log(response);
-          props.boxMessage("Cadastro atualizado", "green");
-          props.editPerfil();
+      AccessDB.putUser(token, newValores)
+        .then((res) => {
+          boxMessage("Cadastro atualizado", "green");
+          editPerfil();
+          setToggle();
         })
         .catch((erro) => {
           console.log(erro);
@@ -73,95 +79,83 @@ const UserCard = (props) => {
       console.log("Favor preencher os campos");
     }
   };
+
   return (
     <div className="CardUser">
-      <form onSubmit={onSubmit}>
-        <div className="FormUser">
-          <label className="labelUser" htmlFor="login">
-            Login:
-          </label>
-          <input
-            name="login"
-            type="text"
-            value={valores.login}
-            disabled={!props.editCard}
-            onChange={onChange}
-          />
-        </div>
-        <div className="FormUser">
-          <label className="labelUser" htmlFor="senha">
-            Senha:
-          </label>
-          <input
-            name="senha"
-            type="password"
-            placeholder="Digite a nova senha"
-            value={valores.senha}
-            disabled={!props.editCard}
-            onChange={onChange}
-          />
-        </div>
-        <div className="FormUser">
-          <label className="labelUser" htmlFor="nome">
-            Nome:
-          </label>
-          <input
-            name="nome"
-            type="text"
-            value={valores.nome}
-            disabled={!props.editCard}
-            onChange={onChange}
-          />
-        </div>
-        <div className="FormUser">
-          <label className="labelUser" htmlFor="cpf">
-            CPF:
-          </label>
-          <input
-            name="cpf"
-            type="text"
-            maxLength="14"
-            placeholder="Somente numeros"
-            onChange={onChangeCPF}
-            value={valores.cpf}
-            disabled={!props.editCard}
-          />
-        </div>
-        <div className="FormUser">
-          <label className="labelUser" htmlFor="email">
-            E-mail:
-          </label>
-          <input
-            name="email"
-            type="email"
-            value={valores.email}
-            disabled={!props.editCard}
-            onChange={onChange}
-          />
-        </div>
-        <div className="FormUser">
-          <label className="labelUser" htmlFor="idade">
-            Idade:
-          </label>
-          <input
-            name="idade"
-            type="number"
-            value={valores.idade}
-            disabled={!props.editCard}
-            onChange={onChange}
-          />
-        </div>
-        <div className="Bottons">
-          <button
-            className="Botao"
-            type="submit"
-            disabled={displayButton.isDisable}
-            style={displayButton}
-          >
-            Salvar alterações
-          </button>
-        </div>
-      </form>
+      <Form
+        name={"login"}
+        className={"FormUser"}
+        type={"text"}
+        onChange={onChange}
+        value={valores.login}
+        onSubmit={onSubmit}
+        text={"Login:"}
+        isDisable={!editCard}
+      />
+      <Form
+        name={"senha"}
+        className={"FormUser"}
+        type={"password"}
+        onChange={onChange}
+        value={valores.senha}
+        onSubmit={onSubmit}
+        text={"Senha:"}
+        placeholder={"Digite a nova senha"}
+        isDisable={!editCard}
+      />
+      <Form
+        name={"nome"}
+        type={"text"}
+        onChange={onChange}
+        value={valores.nome}
+        onSubmit={onSubmit}
+        text={"Nome:"}
+        className={"FormUser"}
+        isDisable={!editCard}
+      />
+      <Form
+        name={"cpf"}
+        type={"text"}
+        onChange={onChange}
+        value={valores.cpf}
+        onSubmit={onSubmit}
+        text={"CPF:"}
+        maxLength={"14"}
+        placeholder={"Somente numeros"}
+        className={"FormUser"}
+        isDisable={!editCard}
+      />
+      <Form
+        name={"email"}
+        type={"email"}
+        onChange={onChange}
+        value={valores.email}
+        onSubmit={onSubmit}
+        text={"E-mail:"}
+        className={"FormUser"}
+        isDisable={!editCard}
+      />
+      <Form
+        name={"idade"}
+        type={"text"}
+        onChange={onChange}
+        value={valores.idade}
+        onSubmit={onSubmit}
+        maxLength={"2"}
+        text={"Idade:"}
+        className={"FormUser"}
+        isDisable={!editCard}
+      />
+      <div className="Bottons">
+        <button
+          className="Botao"
+          type="submit"
+          disabled={displayButton.isDisable}
+          style={displayButton}
+        >
+          Salvar alterações
+        </button>
+      </div>
     </div>
   );
 };

@@ -4,7 +4,6 @@ const util = {
     const chavesObjeto = Object.keys(objeto);
     const result = chavesObjeto.filter((x) => !chavesModel.includes(x));
     result.forEach((x) => delete objeto[x]);
-    //console.log(objeto);
     return objeto;
   },
 

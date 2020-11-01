@@ -1,27 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import "../css/Form.css";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
 import Form from "../Components/Form";
-import axios from "axios";
+import Authenticate from "../Service/Authenticate";
+import AccessDB from "../Service/AccessDB";
+import LocalStorage from "../Util/LocalStorage";
+import StoreContext from "../Components/Context";
 
 const valoresLogin = {
-  login: "",
-  senha: ""
+  email: "",
+  senha: "",
 };
 
 var count = 0;
 
 const PagesLogin = () => {
-  const history = useHistory();
-
   const [valores, setValores] = useState(valoresLogin);
   const [displayButton, setDisplayButton] = useState({
     backgroundColor: "grey",
     isDisable: true,
   });
   const [displayResposta, setDisplayResposta] = useState({ display: "none" });
+
+  const history = useHistory();
+  const { setToken } = useContext(StoreContext);
 
   const onChange = (ev) => {
     //extrair os valores dos inputs
@@ -41,27 +45,24 @@ const PagesLogin = () => {
       : (count = 0);
   };
 
-  const onSubmit = (ev) => {
+  const onSubmit = async (ev) => {
     ev.preventDefault();
-    axios
-      .post("http://localhost:5000/login", valores)
-      .then((response) => {
-        if (response.data.consult.login === "admin") {
-          history.push({
-            pathname: "/painel-adm",
-            state: { token: response.data.token, user: response.data.consult },
-          });
-        } else {
-          history.push({
-            pathname: "/perfil",
-            state: { token: response.data.token, user: response.data.consult },
-          });
-        }
-      })
-      .catch((erro) => {
-        setDisplayResposta({ display: "flex", backgroundColor: "red" });
-        console.log(erro);
-      });
+    const idFirebase = await Authenticate.login(valores);
+
+    if (idFirebase === null) {
+      setDisplayResposta({ display: "flex", backgroundColor: "red" });
+    } else {
+      //verificar se o email ja esta verificado, caso contrario redirecionar para a pagina de verificação
+      const user = await AccessDB.findUser(idFirebase);
+      console.log(user);
+      LocalStorage.setToken(user.token);
+      console.log(LocalStorage.getToken());
+      setToken(user.token);
+      console.log(user.consult.login);
+      user.consult.login === "admin"
+        ? history.push("/painel-adm")
+        : history.push("/perfil");
+    }
   };
 
   return (
@@ -75,12 +76,12 @@ const PagesLogin = () => {
       />
       <h1 className="Titulo">LOGIN</h1>
       <Form
-        name={"login"}
-        type={"text"}
+        name={"email"}
+        type={"email"}
         onChange={onChange}
-        value={valores.login}
+        value={valores.email}
         onSubmit={onSubmit}
-        text={"Login:"}
+        text={"E-mail:"}
       />
       <Form
         name={"senha"}
@@ -105,6 +106,8 @@ const PagesLogin = () => {
           Novo cadastro
         </Link>
       </div>
+      <h2>Entrar com a conta Google: </h2>
+      <button onClick={Authenticate.Google}>Google</button>
     </div>
   );
 };

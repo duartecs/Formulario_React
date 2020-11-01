@@ -1,14 +1,12 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useHistory } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useContext, useEffect } from "react";
 import util from "../Util/VerifyObject";
 import mascaraCPF from "../Util/MascaraCPF";
 import mascaraIdade from "../Util/MascaraIdade";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
 import Form from "../Components/Form";
+import StoreContext from "../Components/Context";
+import AccessDB from "../Service/AccessDB";
 
 import "../css/Form.css";
 
@@ -25,9 +23,8 @@ const valoresForm = {
 };
 
 const PagesPerfil = () => {
-  const history = useHistory();
+  const { token } = useContext(StoreContext);
 
-  const [token, setToken] = useState();
   const [valores, setValores] = useState(valoresForm);
   const [valoresUsuario, setValoresUsuario] = useState(valoresForm);
   const [display, setDisplay] = useState({ isDisable: true });
@@ -39,20 +36,19 @@ const PagesPerfil = () => {
   const [displayPassword, setDisplayPassword] = useState({ display: "none" });
   const [displayEmail, setDisplayEmail] = useState({ display: "none" });
 
-  const location = useLocation();
-
-  if (location.state === undefined) {
-    history.push({ pathname: "/login" });
-  }
-
-  if (token === undefined) {
-    setToken(location.state.token);
-  }
-
   useEffect(() => {
-    setValoresUsuario(util.verifyObject(valoresForm, location.state.user));
-    setValores(valoresUsuario);
-  }, [location, valoresUsuario]);
+    if (valoresUsuario.login === undefined || valoresUsuario.login === "") {
+      AccessDB.findUser(token)
+        .then((user) => {
+          setValoresUsuario(util.verifyObject(valoresForm, user));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      setValores(valoresUsuario);
+    }
+  }, [token, valoresUsuario]);
 
   const onChange = (ev) => {
     //extrair os valores dos inputs
@@ -101,14 +97,11 @@ const PagesPerfil = () => {
         statusEmail = false;
       }
     }
-    //Senha ok e email ok realiza o post
-    if (statusPassword === true && statusEmail === true) {
+    //Senha ok e email ok realiza o put
+    if (statusPassword && statusEmail) {
       const newValue = util.preRequestPUT(valores);
-      axios
-        .put("http://localhost:5000/cadastro", newValue, {
-          headers: { autenticate: token },
-        })
-        .then((response) => {
+      AccessDB.putUser(token, newValue)
+        .then((res) => {
           setValores(newValue);
           newValue.email === undefined &&
             setValores({ ...valores, email: valoresUsuario.email });
@@ -208,7 +201,9 @@ const PagesPerfil = () => {
         type={"fixed"}
         display={displayEmail}
         className={"Alerta"}
-        message={"Os campos de e-mail devem ser iguais, favor digite novamente!"}
+        message={
+          "Os campos de e-mail devem ser iguais, favor digite novamente!"
+        }
       />
       <Form
         name={"idade"}

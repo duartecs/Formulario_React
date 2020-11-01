@@ -30,7 +30,7 @@ const PagesPainelAdmin = () => {
   useEffect(() => {
     axios
       .get("http://localhost:5000/cadastro", {
-        headers: { autenticate: token },
+        headers: { authenticate: token },
       })
       .then((response) => {
         setUsuarios(response.data);
@@ -48,7 +48,7 @@ const PagesPainelAdmin = () => {
       axios
         .delete("http://localhost:5000/cadastro", {
           params: { _id },
-          headers: { autenticate: token },
+          headers: { authenticate: token },
         })
         .then((response) => {
           if (response.status === 200) {

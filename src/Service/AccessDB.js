@@ -1,33 +1,52 @@
 import axios from "axios";
 
-
 const AccessDB = {
-    findUser: (idFirebase) => {
-    return new Promise((resolve, reject) =>{
+  findUserLogin: (idFirebase) => {
+    return new Promise((resolve, reject) => {
       axios
-      .post("http://localhost:5000/login", {login: idFirebase})
-      .then((response) => {
-        resolve (response.data)
-        // if (response.data.consult.login === "admin") {
-        //   history.push({
-        //     pathname: "/painel-adm",
-        //     state: { token: response.data.token, user: response.data.consult },
-        //   });
-        // } else {
-        //   history.push({
-        //     pathname: "/perfil",
-        //     state: { token: response.data.token, user: response.data.consult },
-        //   });
-        // }
-      })
-      .catch((erro) => {
-        console.log(erro);
-        reject (false)
-      });
+        .post("http://localhost:5000/login", { login: idFirebase })
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((erro) => {
+          console.log(erro);
+          reject(false);
+        });
+    });
+  },
 
-    })
-    }
+  findUser: (token) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .get("http://localhost:5000/cadastro", {
+          headers: { authenticate: token },
+        })
+        .then((res) => {
+          console.log(res);
+          resolve(res.data);
+        })
+        .catch((erro) => {
+          console.log(erro);
+          reject(erro);
+        });
+    });
+  },
 
-}
+  putUser: (token, newValue) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .put("http://localhost:5000/cadastro", newValue, {
+          headers: { authenticate: token },
+        })
+        .then((res) => {
+          resolve("Cadastro atualizado")
+        })
+        .catch((erro) => {
+          console.log(erro);
+          reject(erro);
+        });
+    });
+  },
+};
 
 export default AccessDB;

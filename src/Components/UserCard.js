@@ -59,7 +59,7 @@ const UserCard = (props) => {
       console.log(newValores);
       axios
         .put("http://localhost:5000/cadastro", newValores, {
-          headers: { autenticate: token },
+          headers: { authenticate: token },
         })
         .then((response) => {
           console.log(response);

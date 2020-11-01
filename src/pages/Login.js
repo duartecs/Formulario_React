@@ -53,12 +53,9 @@ const PagesLogin = () => {
       setDisplayResposta({ display: "flex", backgroundColor: "red" });
     } else {
       //verificar se o email ja esta verificado, caso contrario redirecionar para a pagina de verificação
-      const user = await AccessDB.findUser(idFirebase);
-      console.log(user);
+      const user = await AccessDB.findUserLogin(idFirebase);
       LocalStorage.setToken(user.token);
-      console.log(LocalStorage.getToken());
       setToken(user.token);
-      console.log(user.consult.login);
       user.consult.login === "admin"
         ? history.push("/painel-adm")
         : history.push("/perfil");

@@ -31,7 +31,7 @@ const Form = ({
 
 Form.defaultProps = {
   isDisable: false,
-  className: Form,
+  className: "Form",
 };
 
 export default Form;

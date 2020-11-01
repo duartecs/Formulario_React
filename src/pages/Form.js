@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import axios from "axios";
-import "../css/Form.css";
+import AccessDB from "../Service/AccessDB";
 import mascaraCPF from "../Util/MascaraCPF";
 import mascaraIdade from "../Util/MascaraIdade";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
 import Form from "../Components/Form";
+
+import "../css/Form.css";
 
 //variaveis de controle
 var statusPassword = false;
@@ -92,13 +93,8 @@ const PagesForm = () => {
 
     //Senha ok e email ok realiza o post
     if (statusPassword === true && statusEmail === true) {
-      axios
-        .post("http://localhost:5000/cadastro", valores)
-        .then((response) => {
-          console.log(response);
-          setResposta("Cadastro salvo com sucesso!");
-          setDisplayResposta({ display: "flex", backgroundColor: "green" });
-          setDisplayButton({ backgroundColor: "grey", isDisable: true });
+      AccessDB.postUser(valores)
+        .then((res) => {
           setValores(valoresForm);
           history.push("/login");
         })

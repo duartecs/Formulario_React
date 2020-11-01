@@ -32,6 +32,20 @@ const AccessDB = {
     });
   },
 
+  postUser: (user) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post("http://localhost:5000/cadastro", user)
+        .then((res) => {
+          resolve(true);
+        })
+        .catch((erro) => {
+          console.log(erro);
+          reject(erro);
+        });
+    })
+  },
+
   putUser: (token, newValue) => {
     return new Promise((resolve, reject) => {
       axios

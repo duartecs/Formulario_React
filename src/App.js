@@ -4,7 +4,7 @@ import StoreProvider from "./Components/Provider";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import PagesHome from "./pages/Home";
-import PagesForm from "./pages/Form";
+import PagesRegister from "./pages/Register";
 import PagesLogin from "./pages/Login";
 import PagesPage404 from "./pages/Page404";
 import PagesPerfil from "./pages/Perfil";
@@ -18,7 +18,7 @@ function App() {
         <StoreProvider>
           <Switch>
             <Route exact path="/" component={PagesHome} />
-            <Route path="/cadastro" component={PagesForm} />
+            <Route path="/cadastro" component={PagesRegister} />
             <Route path="/login" component={PagesLogin} />
             <PrivateRoute path="/perfil" component={PagesPerfil} />
             <PrivateRoute path="/painel-adm" component={PagesPainelAdmin} />

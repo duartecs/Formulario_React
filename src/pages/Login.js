@@ -4,6 +4,7 @@ import "../css/Form.css";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
 import Form from "../Components/Form";
+import Popup from "../Components/Popup/Popup";
 import Authenticate from "../Service/Authenticate";
 import AccessDB from "../Service/AccessDB";
 import LocalStorage from "../Util/LocalStorage";
@@ -23,6 +24,11 @@ const PagesLogin = () => {
     isDisable: true,
   });
   const [displayResposta, setDisplayResposta] = useState({ display: "none" });
+  const [popup, showPopup] = useState(false);
+  const [popupEmail, setPopupEmail] = useState("");
+  const [popupTitle, setPopupTitle] = useState("");
+  const [popupMessage, setPopupMessage] = useState("");
+  const [popupPassword, setPopupPassword] = useState(false);
 
   const history = useHistory();
   const { setToken } = useContext(StoreContext);
@@ -47,23 +53,71 @@ const PagesLogin = () => {
 
   const onSubmit = async (ev) => {
     ev.preventDefault();
-    const idFirebase = await Authenticate.login(valores);
-
-    if (idFirebase === null) {
+    let idFirebase = "";
+    try {
+      idFirebase = await Authenticate.login(valores);
+      if (idFirebase.emailVerified) {
+        const user = await AccessDB.findUserLogin(idFirebase.id_firebase);
+        LocalStorage.setToken(user.token);
+        setToken(user.token);
+        user.consult.login === "admin"
+          ? history.push("/painel-adm")
+          : history.push("/perfil");
+      } else {
+        await Authenticate.verificarEmail();
+        setPopup(false);
+      }
+    } catch (error) {
       setDisplayResposta({ display: "flex", backgroundColor: "red" });
+    }
+  };
+
+  const changePassword = (ev) => {
+    const { name, value } = ev.target;
+    setPopupEmail({ ...popupEmail, [name]: value });
+  };
+
+  const submmitPassword = () => {
+    console.log(popupEmail);
+    Authenticate.redefinirSenha(popupEmail)
+      .then(() => {
+        console.log("email enviado");
+        showPopup(false);
+      })
+      .catch(() => {
+        "deu ruim";
+      });
+  };
+
+  const setPopup = (type) => {
+    if (type) {
+      setPopupTitle("Redefinição de senha");
+      setPopupMessage(
+        "Por favor, informe seu email para enviar a redefinição de senha"
+      );
+      setPopupPassword(true);
+      showPopup(true);
     } else {
-      //verificar se o email ja esta verificado, caso contrario redirecionar para a pagina de verificação
-      const user = await AccessDB.findUserLogin(idFirebase);
-      LocalStorage.setToken(user.token);
-      setToken(user.token);
-      user.consult.login === "admin"
-        ? history.push("/painel-adm")
-        : history.push("/perfil");
+      setPopupTitle("Email de verificação enviado");
+      setPopupMessage(
+        "Por favor, antes de efetuar o login verifique sua caixa de entrada para confirmar sua conta de email."
+      );
+      setPopupPassword(false);
+      showPopup(true);
     }
   };
 
   return (
     <div>
+      {popup && (
+        <Popup
+          closePopup={showPopup}
+          title={popupTitle}
+          message={popupMessage}
+          onChange={popupPassword ? changePassword : false}
+          submmit={popupPassword ? submmitPassword : false}
+        />
+      )}
       <NavBar />
       <Message
         type={"fixed"}
@@ -98,6 +152,16 @@ const PagesLogin = () => {
           onClick={onSubmit}
         >
           Entrar
+        </button>
+        <button
+          className="Botao"
+          id="BotaoLogin"
+          style={{ backgroundColor: "darkblue" }}
+          onClick={() => {
+            setPopup(true);
+          }}
+        >
+          Esqueci minha senha
         </button>
         <Link to="/cadastro" className="Botao" id="BotaoCadastro">
           Novo cadastro

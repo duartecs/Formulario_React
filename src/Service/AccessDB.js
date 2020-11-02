@@ -4,7 +4,7 @@ const AccessDB = {
   findUserLogin: (idFirebase) => {
     return new Promise((resolve, reject) => {
       axios
-        .post("http://localhost:5000/login", { login: idFirebase })
+        .post("http://localhost:5000/login", { id_firebase: idFirebase })
         .then((res) => {
           resolve(res.data);
         })

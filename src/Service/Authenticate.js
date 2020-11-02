@@ -14,7 +14,8 @@ const Authenticate = {
         .auth()
         .createUserWithEmailAndPassword(email, senha)
         .then((response) => {
-          resolve(response.user.uid);
+          console.log(response.user.uid);
+          resolve({ id_firebase: response.user.uid });
         })
         .catch((err) => {
           console.log(err);
@@ -29,7 +30,10 @@ const Authenticate = {
         .auth()
         .signInWithEmailAndPassword(email, senha)
         .then((response) => {
-          resolve(response.user.uid);
+          resolve({
+            id_firebase: response.user.uid,
+            emailVerified: response.user.emailVerified,
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -79,6 +83,23 @@ const Authenticate = {
         .auth()
         .currentUser.sendEmailVerification(actionCodeSettings)
         .then(() => {
+          resolve(true);
+        })
+        .catch((error) => {
+          console.log(error);
+          reject(false);
+        });
+    });
+  },
+
+  redefinirSenha: ({email}) => {
+    console.log("dentro do auth" + email)
+    return new Promise((resolve, reject) => {
+      firebase
+        .auth()
+        .sendPasswordResetEmail(email)
+        .then(() => {
+          console.log("email enviado")
           resolve(true);
         })
         .catch((error) => {

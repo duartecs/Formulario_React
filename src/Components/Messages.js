@@ -1,6 +1,6 @@
 import React from "react";
 
-export default (props) => {
+const Messages = (props) => {
   if (props.type === "temp" && props.display.display === "flex") {
     const delayMessage = setInterval(() => {
       props.boxMessage("reset", "black");
@@ -16,3 +16,5 @@ export default (props) => {
     </>
   );
 };
+
+export default Messages;

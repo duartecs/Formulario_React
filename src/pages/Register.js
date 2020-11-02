@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import AccessDB from "../Service/AccessDB";
+import Authenticate from "../Service/Authenticate";
 import mascaraCPF from "../Util/MascaraCPF";
 import mascaraIdade from "../Util/MascaraIdade";
+import verifyObject from "../Util/VerifyObject";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
 import Form from "../Components/Form";
+import Popup from "../Components/Popup/Popup";
 
 import "../css/Form.css";
 
@@ -26,8 +29,17 @@ const valoresForm = {
   confirmar_email: "",
 };
 
+const valuesRegister = {
+  id_firebase: "",
+  login: "",
+  nome: "",
+  cpf: "",
+  idade: "",
+  email: "",
+};
+
 //Page FORM
-const PagesForm = () => {
+const PagesRegister = () => {
   const history = useHistory();
 
   //States para atualizar valores do form e mensagens de aviso
@@ -40,6 +52,7 @@ const PagesForm = () => {
     isDisable: true,
   });
   const [resposta, setResposta] = useState("");
+  const [popup, showPopup] = useState(false);
 
   //função atualiza a cada dado alterado no form
   const onChange = (ev) => {
@@ -70,7 +83,7 @@ const PagesForm = () => {
       : (count = 0);
   };
 
-  const onSubmit = (ev) => {
+  const onSubmit = async (ev) => {
     ev.preventDefault();
 
     //validar a senha
@@ -92,11 +105,16 @@ const PagesForm = () => {
     }
 
     //Senha ok e email ok realiza o post
-    if (statusPassword === true && statusEmail === true) {
-      AccessDB.postUser(valores)
+    if (statusPassword && statusEmail) {
+      const idFirebase = await Authenticate.cadastrar(valores);
+      const newValues = verifyObject.verifyObject(valuesRegister, {
+        ...idFirebase,
+        ...valores,
+      });
+      AccessDB.postUser(newValues)
         .then((res) => {
           setValores(valoresForm);
-          history.push("/login");
+          changePopup(true);
         })
         .catch((erro) => {
           setDisplayButton({ backgroundColor: "grey", isDisable: true });
@@ -109,9 +127,33 @@ const PagesForm = () => {
     }
   };
 
+  const changePopup = (event) => {
+    if (event) {
+      Authenticate.verificarEmail()
+        .then((res) => {
+          showPopup(true);
+        })
+        .catch((erro) => {
+          console.log(erro);
+        });
+    } else {
+      showPopup(false);
+      history.push("/login");
+    }
+  };
+
   //JSX FORM
   return (
     <div>
+      {popup && (
+        <Popup
+          closePopup={changePopup}
+          title={"Email de verificação enviado"}
+          message={
+            "Por favor, verifique sua caixa de entrada para confirmar sua conta de email."
+          }
+        />
+      )}
       <NavBar />
       <Message
         type={"fixed"}
@@ -217,4 +259,4 @@ const PagesForm = () => {
   );
 };
 
-export default PagesForm;
+export default PagesRegister;

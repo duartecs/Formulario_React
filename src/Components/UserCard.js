@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import StoreContext from "../Components/Context";
+import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
 import Form from "../Components/Form";
 import util from "../Util/VerifyObject";
@@ -17,7 +17,7 @@ const valoresForm = {
 };
 
 const UserCard = ({ user, editCard, editPerfil, boxMessage, setToggle }) => {
-  const { token } = useContext(StoreContext);
+  const { token } = useContext(StorageContext);
 
   const [valores, setValores] = useState(valoresForm);
   const [displayButton, setDisplayButton] = useState({ display: "none" });

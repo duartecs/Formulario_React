@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import StoreContext from "../Components/Context";
+import StorageContext from "../Components/Context";
 import LocalStorage from "../Util/LocalStorage";
 import Authenticate from "../Service/Authenticate";
 import "../css/NavBar.css";
 
 export default () => {
-  const { setToken, setUserGoogle } = useContext(StoreContext);
+  const { setToken, setUserGoogle } = useContext(StorageContext);
 
   const logout = () => {
     Authenticate.logout();

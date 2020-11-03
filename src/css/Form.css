@@ -103,3 +103,27 @@ h3 {
   flex-direction: row;
   flex-wrap: wrap;
 }
+
+.ImageContainer{
+  position: absolute;
+  top: 50px;
+  right: 290px;
+  width: 100px;
+  height: 100px;
+  border: 2px solid darkblue;
+}
+
+.ImageContainer img{
+  width: 100px;
+  height: 100px;
+}
+
+.EditImage{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.EditImage input{
+  display: block;
+}

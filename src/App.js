@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import StoreProvider from "./Components/Provider";
+import StorageProvider from "./Components/Provider";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import PagesHome from "./pages/Home";
@@ -15,7 +15,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <StoreProvider>
+        <StorageProvider>
           <Switch>
             <Route exact path="/" component={PagesHome} />
             <Route path="/cadastro" component={PagesRegister} />
@@ -24,7 +24,7 @@ function App() {
             <PrivateRoute path="/painel-adm" component={PagesPainelAdmin} />
             <Route component={PagesPage404} />
           </Switch>
-        </StoreProvider>
+        </StorageProvider>
       </Router>
     </div>
   );

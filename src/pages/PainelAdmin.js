@@ -2,12 +2,12 @@ import React, { useState, useContext, useEffect } from "react";
 import NavBar from "../Components/NavBar";
 import UserCard from "../Components/UserCard";
 import Message from "../Components/Messages";
-import StoreContext from "../Components/Context";
+import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
 import "../css/Form.css";
 
 const PagesPainelAdmin = () => {
-  const { token } = useContext(StoreContext);
+  const { token } = useContext(StorageContext);
 
   const [usuarios, setUsuarios] = useState([]);
   const [displayResposta, setDisplayResposta] = useState({ display: "none" });

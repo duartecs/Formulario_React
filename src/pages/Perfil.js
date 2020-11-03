@@ -5,8 +5,10 @@ import mascaraIdade from "../Util/MascaraIdade";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
 import Form from "../Components/Form";
-import StoreContext from "../Components/Context";
+import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
+import ImageStorage from "../Service/ImageStorage"
+
 
 import "../css/Form.css";
 
@@ -20,10 +22,11 @@ const valoresForm = {
   cpf: "",
   idade: "",
   email: "",
+  url: "",
 };
 
 const PagesPerfil = () => {
-  const { token } = useContext(StoreContext);
+  const { token } = useContext(StorageContext);
 
   const [valores, setValores] = useState(valoresForm);
   const [valoresUsuario, setValoresUsuario] = useState(valoresForm);
@@ -35,6 +38,11 @@ const PagesPerfil = () => {
   });
   const [displayPassword, setDisplayPassword] = useState({ display: "none" });
   const [displayEmail, setDisplayEmail] = useState({ display: "none" });
+
+  const [image, setImage] = useState(null);
+  const [url, setUrl] = useState(null);
+  const [progress, setProgress] = useState(null);
+  const [editImage, setEditImage] = useState(false);
 
   useEffect(() => {
     if (valoresUsuario.login === undefined || valoresUsuario.login === "") {
@@ -49,6 +57,13 @@ const PagesPerfil = () => {
       setValores(valoresUsuario);
     }
   }, [token, valoresUsuario]);
+
+  if(url !== null){
+    setValores({...valores, url: url})
+    setEditImage(false)
+    setProgress(null)
+    setUrl(null)
+  }
 
   const onChange = (ev) => {
     //extrair os valores dos inputs
@@ -67,6 +82,13 @@ const PagesPerfil = () => {
         break;
     }
   };
+
+  const ImageChange = (e)=> {
+    e.target.files[0] && setImage(e.target.files[0])
+  }
+  const ImageUpload = ()=>{
+    ImageStorage.upload(image, setProgress, setUrl)
+  }
 
   const editPerfil = () => {
     setDisplay({ isDisable: false });
@@ -136,6 +158,9 @@ const PagesPerfil = () => {
       <NavBar />
       <h1>Perfil</h1>
       <h1>Olá {valores.login}</h1>
+      <div className="ImageContainer">
+        <img src={valores.url || "http://via.placeholder.com/100"} alt="Perfil"/>
+      </div>
       <Form
         name={"nome"}
         type={"text"}
@@ -248,6 +273,35 @@ const PagesPerfil = () => {
         >
           Editar perfil
         </button>
+        <button
+          className="Botao"
+          onClick={()=>{setEditImage(!editImage)}}
+          style={{background: "darkblue"}}
+        >
+          {valoresUsuario.url === null ? "Adicionar imagem" : "Editar imagem"}
+        </button>
+      </div>
+      <div style={editImage ? {display: "flex"} : {display: "none"}} className="EditImage">
+        <input type="file" onChange={ImageChange} />
+        <br/>
+        <br/>
+        {progress !== null && <progress value={progress} max="100" />}
+        <div className="Bottons">
+          <button
+            className="Botao"
+            onClick={ImageUpload}
+            style={{background: "darkblue"}}
+          >
+            Enviar
+          </button>
+          <button
+            className="Botao"
+            onClick={()=> {setEditImage(!editImage)}}
+            style={{background: "darkblue"}}
+          >
+            Cancelar
+          </button>
+        </div>
       </div>
     </div>
   );

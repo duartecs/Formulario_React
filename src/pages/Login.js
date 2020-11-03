@@ -8,7 +8,7 @@ import Popup from "../Components/Popup/Popup";
 import Authenticate from "../Service/Authenticate";
 import AccessDB from "../Service/AccessDB";
 import LocalStorage from "../Util/LocalStorage";
-import StoreContext from "../Components/Context";
+import StorageContext from "../Components/Context";
 import BotaoGoogle from "../Images/Google.png";
 
 const valoresLogin = {
@@ -32,7 +32,7 @@ const PagesLogin = () => {
   const [popupPassword, setPopupPassword] = useState(false);
 
   const history = useHistory();
-  const { setToken, setUserGoogle } = useContext(StoreContext);
+  const { setToken, setUserGoogle } = useContext(StorageContext);
 
   const onChange = (ev) => {
     //extrair os valores dos inputs

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import StoreContext from "../Components/Context";
+import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
 import Authenticate from "../Service/Authenticate";
 import mascaraCPF from "../Util/MascaraCPF";
@@ -51,7 +51,7 @@ const PagesRegister = () => {
   const [resposta, setResposta] = useState("");
   const [popup, showPopup] = useState(false);
   const [completRegister, setCompletRegister] = useState(false);
-  const { setToken, userGoogle } = useContext(StoreContext);
+  const { setToken, userGoogle } = useContext(StorageContext);
 
   useEffect(() => {
     userGoogle !== null && setCompletRegister(true);

@@ -1,10 +1,10 @@
 import { createContext } from "react";
 
-const StoreContext = createContext({
+const StorageContext = createContext({
   token: null,
   setToken: () => {},
   userGoogle: null,
   setUserGoogle: () => {},
 });
 
-export default StoreContext;
+export default StorageContext;

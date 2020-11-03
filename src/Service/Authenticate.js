@@ -59,18 +59,18 @@ const Authenticate = {
 
   Google: () => {
     return new Promise((resolve, reject) => {
-      var Provider = new firebase.auth.GoogleAuthStoreProvider();
+      var provider = new firebase.auth.GoogleAuthProvider();
       firebaseApp
         .auth()
-        .signInWithPopup(Provider)
-        .then((response) => {
-          resolve(true);
+        .signInWithPopup(provider)
+        .then((res) => {
+          resolve(res);
         })
         .catch((err) => {
           console.log(err);
           reject(false);
         });
-    });
+   });
   },
 
   verificarEmail: () => {

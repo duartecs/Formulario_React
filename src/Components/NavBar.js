@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import Authenticate from "../Service/Authenticate"
+import StoreContext from "../Components/Context";
+import LocalStorage from "../Util/LocalStorage";
+import Authenticate from "../Service/Authenticate";
 import "../css/NavBar.css";
 
 export default () => {
+  const { setToken, setUserGoogle } = useContext(StoreContext);
+
+  const logout = () => {
+    Authenticate.logout();
+    LocalStorage.removeToken();
+    setToken(null);
+    setUserGoogle(null);
+  };
+
   return (
     <>
       <nav>
@@ -20,7 +31,7 @@ export default () => {
             <Link to="/login">LOGIN</Link>
           </li>
           <li>
-            <button onClick={Authenticate.logout}>Logout</button>
+            <button onClick={logout}>Logout</button>
           </li>
         </ul>
       </nav>

@@ -9,6 +9,7 @@ import Authenticate from "../Service/Authenticate";
 import AccessDB from "../Service/AccessDB";
 import LocalStorage from "../Util/LocalStorage";
 import StoreContext from "../Components/Context";
+import BotaoGoogle from "../Images/Google.png";
 
 const valoresLogin = {
   email: "",
@@ -31,7 +32,7 @@ const PagesLogin = () => {
   const [popupPassword, setPopupPassword] = useState(false);
 
   const history = useHistory();
-  const { setToken } = useContext(StoreContext);
+  const { setToken, setUserGoogle } = useContext(StoreContext);
 
   const onChange = (ev) => {
     //extrair os valores dos inputs
@@ -78,14 +79,13 @@ const PagesLogin = () => {
   };
 
   const submmitPassword = () => {
-    console.log(popupEmail);
     Authenticate.redefinirSenha(popupEmail)
       .then(() => {
         console.log("email enviado");
         showPopup(false);
       })
-      .catch(() => {
-        "deu ruim";
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -105,6 +105,31 @@ const PagesLogin = () => {
       setPopupPassword(false);
       showPopup(true);
     }
+  };
+
+  const GoogleLogin = async () => {
+    Authenticate.Google()
+      .then((res) => {
+        AccessDB.findUserLogin(res.user.uid)
+          .then((user) => {
+            LocalStorage.setToken(user.token);
+            setToken(user.token);
+            user.consult.login === "admin"
+              ? history.push("/painel-adm")
+              : history.push("/perfil");
+          })
+          .catch(() => {
+            setUserGoogle({
+              id_firebase: res.user.uid,
+              nome: res.user.displayName,
+              email: res.user.email,
+            });
+            history.push("/cadastro");
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -167,8 +192,13 @@ const PagesLogin = () => {
           Novo cadastro
         </Link>
       </div>
-      <h2>Entrar com a conta Google: </h2>
-      <button onClick={Authenticate.Google}>Google</button>
+
+      <h3>Entrar com a conta Google: </h3>
+      <div className="Bottons">
+        <button onClick={GoogleLogin}>
+          <img src={BotaoGoogle} alt="Botton Google"></img>
+        </button>
+      </div>
     </div>
   );
 };

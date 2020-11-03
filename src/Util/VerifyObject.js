@@ -24,6 +24,15 @@ const util = {
     delete objeto.senha;
     delete objeto.confirmar_senha;
     delete objeto.confirmar_email;
+    return objeto;
   },
+
+  isEmpty: (objeto) => {
+    var count = 0;
+    for (var element in objeto) {
+      objeto[element] === "" && (count = count + 1);
+    }
+    return count
+  }
 };
 export default util;

@@ -30,11 +30,9 @@ export const Text = styled.h1`
 export const Message = styled.p`
   font-size: 14px;
   display: flex;
-
   justify-content: center;
-
   aling-items: center;
-
+  margin-bottom: 20px;
 `;
 export const Button = styled.button`
   margin: 25px 0 0 33%;

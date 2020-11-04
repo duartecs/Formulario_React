@@ -32,7 +32,7 @@ const util = {
     for (var element in objeto) {
       objeto[element] === "" && (count = count + 1);
     }
-    return count
-  }
+    return count;
+  },
 };
 export default util;

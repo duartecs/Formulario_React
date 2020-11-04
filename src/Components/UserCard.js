@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
+import { Button } from "../Components/Button";
 import Form from "../Components/Form";
 import util from "../Util/VerifyObject";
-import mascaraCPF from "../Util/MascaraCPF";
-import mascaraIdade from "../Util/MascaraIdade";
+import Mascara from "../Util/Mascara";
 
 const valoresForm = {
   _id: "",
@@ -20,17 +20,13 @@ const UserCard = ({ user, editCard, editPerfil, boxMessage, setToggle }) => {
   const { token } = useContext(StorageContext);
 
   const [valores, setValores] = useState(valoresForm);
-  const [displayButton, setDisplayButton] = useState({ display: "none" });
+  const [displayButton, setDisplayButton] = useState(false);
 
   useEffect(() => {
     if (editCard) {
-      setDisplayButton({
-        display: "flex",
-        backgroundColor: "darkblue",
-        isDisable: false,
-      });
+      setDisplayButton(true);
     } else {
-      setDisplayButton({ display: "none" });
+      setDisplayButton(false);
     }
     user.senha = "";
     setValores(user);
@@ -41,10 +37,10 @@ const UserCard = ({ user, editCard, editPerfil, boxMessage, setToggle }) => {
 
     switch (ev.target.name) {
       case "cpf":
-        setValores({ ...valores, [name]: mascaraCPF(value) });
+        setValores({ ...valores, [name]: Mascara.CPF(value) });
         break;
       case "idade":
-        setValores({ ...valores, [name]: mascaraIdade(value) });
+        setValores({ ...valores, [name]: Mascara.Idade(value) });
         break;
       default:
         setValores({ ...valores, [name]: value });
@@ -146,15 +142,11 @@ const UserCard = ({ user, editCard, editPerfil, boxMessage, setToggle }) => {
         className={"FormUser"}
         isDisable={!editCard}
       />
-      <div className="Bottons">
-        <button
-          className="Botao"
-          type="submit"
-          disabled={displayButton.isDisable}
-          style={displayButton}
-        >
-          Salvar alterações
-        </button>
+      <div
+        className="Bottons"
+        style={{ display: displayButton ? "flex" : "none" }}
+      >
+        <Button>Salvar alterações</Button>
       </div>
     </div>
   );

@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import StorageContext from "../Components/Context";
 import LocalStorage from "../Util/LocalStorage";
 import Authenticate from "../Service/Authenticate";
+
 import "../css/NavBar.css";
 
 export default () => {
-  const { setToken, setUserGoogle } = useContext(StorageContext);
+  const { token, setToken, setUserGoogle } = useContext(StorageContext);
 
   const logout = () => {
     Authenticate.logout();
@@ -22,16 +23,17 @@ export default () => {
           <li>
             <Link to="/">HOME</Link>
           </li>
-          <li id="cadastro">
-            <Link to="/cadastro">CADASTRO</Link>
-          </li>
+          <li>{token === null && <Link to="/cadastro">CADASTRO</Link>}</li>
         </ul>
         <ul>
+          <li>{token === null && <Link to="/login">LOGIN</Link>}</li>
+          <li>{token !== null && <Link to="/perfil">PERFIL</Link>}</li>
           <li>
-            <Link to="/login">LOGIN</Link>
-          </li>
-          <li>
-            <button onClick={logout}>Logout</button>
+            {token !== null && (
+              <button className="BtnLogout" onClick={logout}>
+                LOGOUT
+              </button>
+            )}
           </li>
         </ul>
       </nav>

@@ -3,19 +3,16 @@ import { useHistory } from "react-router-dom";
 import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
 import Authenticate from "../Service/Authenticate";
-import mascaraCPF from "../Util/MascaraCPF";
-import mascaraIdade from "../Util/MascaraIdade";
-import verifyObject from "../Util/VerifyObject";
+import Mascara from "../Util/Mascara";
+import util from "../Util/VerifyObject";
 import LocalStorage from "../Util/LocalStorage";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
+import { Button } from "../Components/Button";
 import Form from "../Components/Form";
 import Popup from "../Components/Popup/Popup";
 
 import "../css/Form.css";
-
-var statusPassword = false;
-var statusEmail = false;
 
 const valoresForm = {
   login: "",
@@ -41,13 +38,10 @@ const PagesRegister = () => {
   const history = useHistory();
 
   const [valores, setValores] = useState(valoresForm);
-  const [displayPassword, setDisplayPassword] = useState({ display: "none" });
-  const [displayEmail, setDisplayEmail] = useState({ display: "none" });
+  const [displayPassword, setDisplayPassword] = useState(false);
+  const [displayEmail, setDisplayEmail] = useState(false);
   const [displayResposta, setDisplayResposta] = useState({ display: "none" });
-  const [displayButton, setDisplayButton] = useState({
-    backgroundColor: "grey",
-    isDisable: true,
-  });
+  const [displayButton, setDisplayButton] = useState(false);
   const [resposta, setResposta] = useState("");
   const [popup, showPopup] = useState(false);
   const [completRegister, setCompletRegister] = useState(false);
@@ -59,8 +53,7 @@ const PagesRegister = () => {
   }, [userGoogle]);
 
   if (completRegister) {
-    setValores(verifyObject.editModel({ ...valores, ...userGoogle }));
-    console.log(valores);
+    setValores(util.editModel({ ...valores, ...userGoogle }));
     setCompletRegister(false);
   }
 
@@ -69,52 +62,45 @@ const PagesRegister = () => {
 
     switch (ev.target.name) {
       case "cpf":
-        setValores({ ...valores, [name]: mascaraCPF(value) });
+        setValores({ ...valores, [name]: Mascara.CPF(value) });
         break;
       case "idade":
-        setValores({ ...valores, [name]: mascaraIdade(value) });
+        setValores({ ...valores, [name]: Mascara.Idade(value) });
         break;
       default:
         setValores({ ...valores, [name]: value });
         break;
     }
-    verifyObject.isEmpty(valores) === 0 &&
-      setDisplayButton({ backgroundColor: "blue", isDisable: false });
+    util.isEmpty(valores) === 0
+      ? setDisplayButton(true)
+      : setDisplayButton(false);
   };
 
   const onSubmit = async (ev) => {
     ev.preventDefault();
 
     if (userGoogle === null) {
-      if (valores.senha === valores.confirmar_senha) {
-        setDisplayPassword({ display: "none" });
-        statusPassword = true;
-      } else {
-        setDisplayPassword({ display: "flex" });
-        statusPassword = false;
-      }
-      if (valores.email === valores.confirmar_email) {
-        setDisplayEmail({ display: "none" });
-        statusEmail = true;
-      } else {
-        setDisplayEmail({ display: "flex" });
-        statusEmail = false;
-      }
+      valores.senha === valores.confirmar_senha
+        ? setDisplayPassword(false)
+        : setDisplayPassword(true);
+      valores.email === valores.confirmar_email
+        ? setDisplayEmail(false)
+        : setDisplayEmail(true);
     } else {
-      statusPassword = true;
-      statusEmail = true;
+      setDisplayPassword(true);
+      setDisplayEmail(true);
     }
 
-    if (statusPassword && statusEmail) {
+    if (displayPassword && displayEmail) {
       var newValues = {};
       if (userGoogle === null) {
         const idFirebase = await Authenticate.cadastrar(valores);
-        newValues = verifyObject.verifyObject(valuesRegister, {
+        newValues = util.verifyObject(valuesRegister, {
           ...idFirebase,
           ...valores,
         });
       } else {
-        newValues = verifyObject.verifyObject(valuesRegister, valores);
+        newValues = util.verifyObject(valuesRegister, valores);
       }
       AccessDB.postUser(newValues)
         .then((res) => {
@@ -131,7 +117,7 @@ const PagesRegister = () => {
           }
         })
         .catch((erro) => {
-          setDisplayButton({ backgroundColor: "grey", isDisable: true });
+          setDisplayButton(false);
           setResposta(erro.response.data);
           setDisplayResposta({ display: "flex", backgroundColor: "red" });
           console.log(erro.response.data);
@@ -209,7 +195,7 @@ const PagesRegister = () => {
       {userGoogle === null && (
         <Message
           type={"fixed"}
-          display={displayPassword}
+          display={{ display: displayPassword ? "flex" : "none" }}
           className={"Alerta"}
           message={
             "Os campos de senha devem ser iguais, favor digite novamente!"
@@ -256,7 +242,7 @@ const PagesRegister = () => {
       {userGoogle === null && (
         <Message
           type={"fixed"}
-          display={displayEmail}
+          display={{ display: displayEmail ? "flex" : "none" }}
           className={"Alerta"}
           message={
             "Os campos de e-mail devem ser iguais, favor digite novamente!"
@@ -273,16 +259,9 @@ const PagesRegister = () => {
         text={"Idade:"}
       />
       <div className="Bottons">
-        <button
-          className="Botao"
-          id="BotaoSubmmit"
-          type="submit"
-          disabled={displayButton.isDisable}
-          style={displayButton}
-          onClick={onSubmit}
-        >
+        <Button desactive={displayButton ? false : true} onClick={onSubmit}>
           {userGoogle === null ? "Cadastrar" : "Finalizar Cadastro"}
-        </button>
+        </Button>
       </div>
     </div>
   );

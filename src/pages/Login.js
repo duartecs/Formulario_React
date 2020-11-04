@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import "../css/Form.css";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
@@ -9,6 +9,7 @@ import Authenticate from "../Service/Authenticate";
 import AccessDB from "../Service/AccessDB";
 import LocalStorage from "../Util/LocalStorage";
 import StorageContext from "../Components/Context";
+import { Button, Gbutton } from "../Components/Button";
 import BotaoGoogle from "../Images/Google.png";
 
 const valoresLogin = {
@@ -20,10 +21,7 @@ var count = 0;
 
 const PagesLogin = () => {
   const [valores, setValores] = useState(valoresLogin);
-  const [displayButton, setDisplayButton] = useState({
-    backgroundColor: "grey",
-    isDisable: true,
-  });
+  const [displayButton, setDisplayButton] = useState(false);
   const [displayResposta, setDisplayResposta] = useState({ display: "none" });
   const [popup, showPopup] = useState(false);
   const [popupEmail, setPopupEmail] = useState("");
@@ -47,9 +45,7 @@ const PagesLogin = () => {
     }
 
     //gatilho para habilitar o botão de submmit
-    count === 2
-      ? setDisplayButton({ backgroundColor: "blue", isDisable: false })
-      : (count = 0);
+    count === 2 ? setDisplayButton(true) : (count = 0);
   };
 
   const onSubmit = async (ev) => {
@@ -168,35 +164,29 @@ const PagesLogin = () => {
         text={"Senha:"}
       />
       <div className="Bottons">
-        <button
-          className="Botao"
-          id="BotaoLogin"
-          type="submit"
-          disabled={displayButton.isDisable}
-          style={displayButton}
+        <Button
+          desactive={displayButton ? false : true}
+          disabled={displayButton ? false : true}
           onClick={onSubmit}
         >
           Entrar
-        </button>
-        <button
-          className="Botao"
-          id="BotaoLogin"
-          style={{ backgroundColor: "darkblue" }}
+        </Button>
+        <Button
           onClick={() => {
             setPopup(true);
           }}
         >
           Esqueci minha senha
-        </button>
-        <Link to="/cadastro" className="Botao" id="BotaoCadastro">
+        </Button>
+        <Gbutton as="a" href="/cadastro">
           Novo cadastro
-        </Link>
+        </Gbutton>
       </div>
 
-      <h3>Entrar com a conta Google: </h3>
+      <h3>Entrar com uma conta Google: </h3>
       <div className="Bottons">
-        <button onClick={GoogleLogin}>
-          <img src={BotaoGoogle} alt="Botton Google"></img>
+        <button className="BtnGoogle" onClick={GoogleLogin}>
+          <img src={BotaoGoogle} alt="Botton Google" />
         </button>
       </div>
     </div>

@@ -1,14 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import util from "../Util/VerifyObject";
-import mascaraCPF from "../Util/MascaraCPF";
-import mascaraIdade from "../Util/MascaraIdade";
+import Mascara from "../Util/Mascara";
 import NavBar from "../Components/NavBar";
 import Message from "../Components/Messages";
+import { Button, Gbutton } from "../Components/Button";
 import Form from "../Components/Form";
 import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
-import ImageStorage from "../Service/ImageStorage"
-
+import ImageStorage from "../Service/ImageStorage";
 
 import "../css/Form.css";
 
@@ -31,11 +30,7 @@ const PagesPerfil = () => {
   const [valores, setValores] = useState(valoresForm);
   const [valoresUsuario, setValoresUsuario] = useState(valoresForm);
   const [display, setDisplay] = useState({ isDisable: true });
-  const [displayButton, setDisplayButton] = useState({ display: "none" });
-  const [displayEditButton, setDisplayEditButton] = useState({
-    display: "flex",
-    background: "darkblue",
-  });
+  const [displayButton, setDisplayButton] = useState(false);
   const [displayPassword, setDisplayPassword] = useState({ display: "none" });
   const [displayEmail, setDisplayEmail] = useState({ display: "none" });
 
@@ -58,11 +53,11 @@ const PagesPerfil = () => {
     }
   }, [token, valoresUsuario]);
 
-  if(url !== null){
-    setValores({...valores, url: url})
-    setEditImage(false)
-    setProgress(null)
-    setUrl(null)
+  if (url !== null) {
+    setValores({ ...valores, url: url });
+    setEditImage(false);
+    setProgress(null);
+    setUrl(null);
   }
 
   const onChange = (ev) => {
@@ -72,10 +67,10 @@ const PagesPerfil = () => {
     //setar os novos valores do state
     switch (ev.target.name) {
       case "cpf":
-        setValores({ ...valores, [name]: mascaraCPF(value) });
+        setValores({ ...valores, [name]: Mascara.CPF(value) });
         break;
       case "idade":
-        setValores({ ...valores, [name]: mascaraIdade(value) });
+        setValores({ ...valores, [name]: Mascara.Idade(value) });
         break;
       default:
         setValores({ ...valores, [name]: value });
@@ -83,17 +78,16 @@ const PagesPerfil = () => {
     }
   };
 
-  const ImageChange = (e)=> {
-    e.target.files[0] && setImage(e.target.files[0])
-  }
-  const ImageUpload = ()=>{
-    ImageStorage.upload(image, setProgress, setUrl)
-  }
+  const ImageChange = (e) => {
+    e.target.files[0] && setImage(e.target.files[0]);
+  };
+  const ImageUpload = () => {
+    ImageStorage.upload(image, setProgress, setUrl);
+  };
 
   const editPerfil = () => {
     setDisplay({ isDisable: false });
-    setDisplayButton({ display: "flex" });
-    setDisplayEditButton({ display: "none" });
+    setDisplayButton(true);
     setValores({ ...valores, email: "" });
   };
 
@@ -146,9 +140,8 @@ const PagesPerfil = () => {
       util.editModel(valores);
       setValores(valoresUsuario);
     }
-    setDisplayButton({ display: "none" });
+    setDisplayButton(false);
     setDisplay({ isDisable: true });
-    setDisplayEditButton({ display: "flex", background: "darkblue" });
     setDisplayEmail({ display: "none" });
     setDisplayPassword({ display: "none" });
   };
@@ -159,7 +152,10 @@ const PagesPerfil = () => {
       <h1>Perfil</h1>
       <h1>Olá {valores.login}</h1>
       <div className="ImageContainer">
-        <img src={valores.url || "http://via.placeholder.com/100"} alt="Perfil"/>
+        <img
+          src={valores.url || "http://via.placeholder.com/100"}
+          alt="Perfil"
+        />
       </div>
       <Form
         name={"nome"}
@@ -170,7 +166,7 @@ const PagesPerfil = () => {
         text={"Nome:"}
         isDisable={display.isDisable}
       />
-      <div style={displayButton}>
+      <div style={{ display: displayButton ? "flex" : "none" }}>
         <Form
           name={"senha"}
           type={"password"}
@@ -180,7 +176,7 @@ const PagesPerfil = () => {
           text={"Nova senha:"}
         />
       </div>
-      <div style={displayButton}>
+      <div style={{ display: displayButton ? "flex" : "none" }}>
         <Form
           name={"confirmar_senha"}
           type={"password"}
@@ -216,7 +212,7 @@ const PagesPerfil = () => {
         text={display.isDisable ? "E-mail:" : "Novo e-mail:"}
         isDisable={display.isDisable}
       />
-      <div style={displayButton}>
+      <div style={{ display: displayButton ? "flex" : "none" }}>
         <Form
           name={"confirmar_email"}
           type={"email"}
@@ -244,63 +240,43 @@ const PagesPerfil = () => {
         text={"Idade:"}
         isDisable={display.isDisable}
       />
-      <div className="Bottons">
-        <button
-          className="Botao"
-          id="BotaoCadastro"
-          type="submit"
-          onClick={putPerfil}
-          style={displayButton}
-        >
-          Salvar alterações
-        </button>
-        <button
-          className="Botao"
-          id="BotaoCancelar"
-          type="reset"
-          onClick={() => cancel(true)}
-          style={displayButton}
-        >
-          Cancelar
-        </button>
+      <div
+        className="Bottons"
+        style={{ display: displayButton ? "flex" : "none" }}
+      >
+        <Gbutton onClick={putPerfil}>Salvar alterações</Gbutton>
+        <Button onClick={() => cancel(true)}>Cancelar</Button>
       </div>
-
-      <div className="Bottons">
-        <button
-          className="Botao"
-          onClick={editPerfil}
-          style={displayEditButton}
-        >
-          Editar perfil
-        </button>
-        <button
-          className="Botao"
-          onClick={()=>{setEditImage(!editImage)}}
-          style={{background: "darkblue"}}
+      <div
+        className="Bottons"
+        style={{ display: displayButton ? "none" : "flex" }}
+      >
+        <Button onClick={editPerfil}>Editar perfil</Button>
+        <Button
+          onClick={() => {
+            setEditImage(!editImage);
+          }}
         >
           {valoresUsuario.url === null ? "Adicionar imagem" : "Editar imagem"}
-        </button>
+        </Button>
       </div>
-      <div style={editImage ? {display: "flex"} : {display: "none"}} className="EditImage">
+      <div
+        style={{ display: editImage ? "flex" : "none" }}
+        className="EditImage"
+      >
         <input type="file" onChange={ImageChange} />
-        <br/>
-        <br/>
+        <br />
+        <br />
         {progress !== null && <progress value={progress} max="100" />}
         <div className="Bottons">
-          <button
-            className="Botao"
-            onClick={ImageUpload}
-            style={{background: "darkblue"}}
-          >
-            Enviar
-          </button>
-          <button
-            className="Botao"
-            onClick={()=> {setEditImage(!editImage)}}
-            style={{background: "darkblue"}}
+          <Gbutton onClick={ImageUpload}>Enviar</Gbutton>
+          <Button
+            onClick={() => {
+              setEditImage(!editImage);
+            }}
           >
             Cancelar
-          </button>
+          </Button>
         </div>
       </div>
     </div>

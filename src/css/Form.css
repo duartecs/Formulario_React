@@ -48,25 +48,9 @@ h3 {
   justify-content: center;
 }
 
-.Botao {
-  margin: 10px;
-  background-color: grey;
+.BtnGoogle {
   border: none;
-  border-radius: 8px;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-}
-
-#BotaoCadastro {
-  background-color: green;
-}
-
-#BotaoCancelar {
-  background-color: darkblue;
+  background-color: unset;
 }
 
 .Resposta {
@@ -94,17 +78,13 @@ h3 {
   padding-left: 25px;
 }
 
-.Botao.adm {
-  margin: 5px;
-}
-
 .PainelADM {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
 
-.ImageContainer{
+.ImageContainer {
   position: absolute;
   top: 50px;
   right: 290px;
@@ -113,17 +93,17 @@ h3 {
   border: 2px solid darkblue;
 }
 
-.ImageContainer img{
+.ImageContainer img {
   width: 100px;
   height: 100px;
 }
 
-.EditImage{
+.EditImage {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.EditImage input{
+.EditImage input {
   display: block;
 }

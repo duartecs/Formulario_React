@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import NavBar from "../Components/NavBar";
 import UserCard from "../Components/UserCard";
 import Message from "../Components/Messages";
+import { Button, Rbutton } from "../Components/Button";
 import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
 import "../css/Form.css";
@@ -41,7 +42,7 @@ const PagesPainelAdmin = () => {
   };
 
   const editPerfil = (user) => {
-    editCard === "" ? setEditCard(user._id) : setEditCard("")
+    editCard === "" ? setEditCard(user._id) : setEditCard("");
   };
 
   const boxMessage = (message, color) => {
@@ -76,20 +77,10 @@ const PagesPainelAdmin = () => {
               boxMessage={boxMessage}
             />
             <div className="DisplayButtons">
-              <button
-                className="Botao adm"
-                style={{ background: "darkred" }}
-                onClick={() => deletePerfil(user)}
-              >
-                Excluir
-              </button>
-              <button
-                className="Botao adm"
-                style={{ background: "darkblue" }}
-                onClick={() => editPerfil(user)}
-              >
+              <Rbutton onClick={() => deletePerfil(user)}>Excluir</Rbutton>
+              <Button onClick={() => editPerfil(user)}>
                 {editCard === "" ? "Editar" : "Cancelar"}
-              </button>
+              </Button>
             </div>
           </div>
         ))}

@@ -16,6 +16,13 @@ h3 {
   margin: auto;
 }
 
+.PasswordForm{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 30px 0 15px 0
+}
+
 .FormUser {
   display: flex;
   flex-direction: row;

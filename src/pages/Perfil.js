@@ -7,12 +7,10 @@ import { Button, Gbutton } from "../Components/Button";
 import Form from "../Components/Form";
 import StorageContext from "../Components/Context";
 import AccessDB from "../Service/AccessDB";
+import Authenticate from "../Service/Authenticate";
 import ImageStorage from "../Service/ImageStorage";
 
 import "../css/Form.css";
-
-var statusPassword = false;
-var statusEmail = false;
 
 const valoresForm = {
   _id: "",
@@ -25,17 +23,24 @@ const valoresForm = {
 };
 
 const PagesPerfil = () => {
+  console.log("page");
   const { token } = useContext(StorageContext);
 
   const [valores, setValores] = useState(valoresForm);
   const [valoresUsuario, setValoresUsuario] = useState(valoresForm);
   const [display, setDisplay] = useState({ isDisable: true });
   const [displayButton, setDisplayButton] = useState(false);
-  const [displayPassword, setDisplayPassword] = useState({ display: "none" });
-  const [displayEmail, setDisplayEmail] = useState({ display: "none" });
+  const [changePassword, setChangePassword] = useState({
+    display: false,
+    message: false,
+    submmit: false,
+  });
+  const [valuePassword, setValuePassword] = useState({
+    senha: "",
+    confirmar_senha: "",
+  });
 
   const [image, setImage] = useState(null);
-  const [url, setUrl] = useState(null);
   const [progress, setProgress] = useState(null);
   const [editImage, setEditImage] = useState(false);
 
@@ -43,7 +48,7 @@ const PagesPerfil = () => {
     if (valoresUsuario.login === undefined || valoresUsuario.login === "") {
       AccessDB.findUser(token)
         .then((user) => {
-          setValoresUsuario(util.verifyObject(valoresForm, user));
+          setValoresUsuario(util.verifyObject(valoresForm, user.login === undefined ? user[0] : user));
         })
         .catch((err) => {
           console.log(err);
@@ -53,18 +58,37 @@ const PagesPerfil = () => {
     }
   }, [token, valoresUsuario]);
 
-  if (url !== null) {
-    setValores({ ...valores, url: url });
-    setEditImage(false);
-    setProgress(null);
-    setUrl(null);
-  }
+  const onChangePassword = (ev) => {
+    const { name, value } = ev.target;
+    console.log(ev.target);
+    setValuePassword({ ...valuePassword, [name]: value });
+    util.isEmpty(valuePassword) === 0
+      ? setChangePassword({ ...changePassword, submmit: true })
+      : setChangePassword({ ...changePassword, submmit: false });
+  };
+
+  const putPassword = (ev) => {
+    ev.preventDefault();
+    valuePassword.senha === valuePassword.confirmar_senha
+      ? setChangePassword({ ...changePassword, message: false })
+      : setChangePassword({ ...changePassword, message: true });
+
+    if (!changePassword.message && changePassword.submmit) {
+      console.log(valuePassword)
+      Authenticate.mudarSenha(valuePassword)
+        .then((res) => {
+          console.log(res)
+        })
+        .catch((erro) => {
+          console.log(erro);
+        });
+    }
+  };
 
   const onChange = (ev) => {
-    //extrair os valores dos inputs
     const { name, value } = ev.target;
+    console.log(ev.target);
 
-    //setar os novos valores do state
     switch (ev.target.name) {
       case "cpf":
         setValores({ ...valores, [name]: Mascara.CPF(value) });
@@ -82,43 +106,28 @@ const PagesPerfil = () => {
     e.target.files[0] && setImage(e.target.files[0]);
   };
   const ImageUpload = () => {
-    ImageStorage.upload(image, setProgress, setUrl);
+    ImageStorage.upload(image, setProgress).then((url) => {
+      AccessDB.putUser(token, { _id: valores._id, url })
+        .then((res) => {
+          //informar o usuario que a imagem foi atualizada
+          setProgress(null);
+          setEditImage(null);
+          setImage(null);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
   };
 
   const editPerfil = () => {
     setDisplay({ isDisable: false });
     setDisplayButton(true);
-    setValores({ ...valores, email: "" });
   };
 
   const putPerfil = (ev) => {
     ev.preventDefault();
-    if (valores.senha === "") {
-      statusPassword = true;
-    } else {
-      //validar a senha
-      if (valores.senha === valores.confirmar_senha) {
-        setDisplayPassword({ display: "none" });
-        statusPassword = true;
-      } else {
-        setDisplayPassword({ display: "flex" });
-        statusPassword = false;
-      }
-    }
-    if (valores.email === "") {
-      statusEmail = true;
-    } else {
-      //validar o email
-      if (valores.email === valores.confirmar_email) {
-        setDisplayEmail({ display: "none" });
-        statusEmail = true;
-      } else {
-        setDisplayEmail({ display: "flex" });
-        statusEmail = false;
-      }
-    }
-    //Senha ok e email ok realiza o put
-    if (statusPassword && statusEmail) {
+    if (util.isEmpty(valores) === 0) {
       const newValue = util.preRequestPUT(valores);
       AccessDB.putUser(token, newValue)
         .then((res) => {
@@ -142,8 +151,6 @@ const PagesPerfil = () => {
     }
     setDisplayButton(false);
     setDisplay({ isDisable: true });
-    setDisplayEmail({ display: "none" });
-    setDisplayPassword({ display: "none" });
   };
 
   return (
@@ -166,32 +173,6 @@ const PagesPerfil = () => {
         text={"Nome:"}
         isDisable={display.isDisable}
       />
-      <div style={{ display: displayButton ? "flex" : "none" }}>
-        <Form
-          name={"senha"}
-          type={"password"}
-          onChange={onChange}
-          value={valores.senha}
-          onSubmit={putPerfil}
-          text={"Nova senha:"}
-        />
-      </div>
-      <div style={{ display: displayButton ? "flex" : "none" }}>
-        <Form
-          name={"confirmar_senha"}
-          type={"password"}
-          onChange={onChange}
-          value={valores.confirmar_senha}
-          onSubmit={putPerfil}
-          text={"Confirme a nova senha:"}
-        />
-      </div>
-      <Message
-        type={"fixed"}
-        display={displayPassword}
-        className={"Alerta"}
-        message={"Os campos de senha devem ser iguais, favor digite novamente!"}
-      />
       <Form
         name={"cpf"}
         type={"text"}
@@ -200,7 +181,7 @@ const PagesPerfil = () => {
         onSubmit={putPerfil}
         text={"CPF:"}
         maxLength={"14"}
-        placeholder={"Somente numeros"}
+        placeholder={"___.___.___-__"}
         isDisable={display.isDisable}
       />
       <Form
@@ -209,26 +190,8 @@ const PagesPerfil = () => {
         onChange={onChange}
         value={valores.email}
         onSubmit={putPerfil}
-        text={display.isDisable ? "E-mail:" : "Novo e-mail:"}
-        isDisable={display.isDisable}
-      />
-      <div style={{ display: displayButton ? "flex" : "none" }}>
-        <Form
-          name={"confirmar_email"}
-          type={"email"}
-          onChange={onChange}
-          value={valores.confirmar_email}
-          onSubmit={putPerfil}
-          text={"Confirme o novo e-mail:"}
-        />
-      </div>
-      <Message
-        type={"fixed"}
-        display={displayEmail}
-        className={"Alerta"}
-        message={
-          "Os campos de e-mail devem ser iguais, favor digite novamente!"
-        }
+        text={"E-mail:"}
+        isDisable
       />
       <Form
         name={"idade"}
@@ -254,6 +217,13 @@ const PagesPerfil = () => {
         <Button onClick={editPerfil}>Editar perfil</Button>
         <Button
           onClick={() => {
+            setChangePassword({ ...changePassword, display: true });
+          }}
+        >
+          Mudar senha
+        </Button>
+        <Button
+          onClick={() => {
             setEditImage(!editImage);
           }}
         >
@@ -273,6 +243,51 @@ const PagesPerfil = () => {
           <Button
             onClick={() => {
               setEditImage(!editImage);
+            }}
+          >
+            Cancelar
+          </Button>
+        </div>
+      </div>
+      <div
+        className="PasswordForm"
+        style={{ display: changePassword.display ? "flex" : "none" }}
+      >
+        <Form
+          name={"senha"}
+          type={"password"}
+          onChange={onChangePassword}
+          value={valuePassword.senha}
+          onSubmit={putPassword}
+          text={"Nova senha:"}
+        />
+        <Form
+          name={"confirmar_senha"}
+          type={"password"}
+          onChange={onChangePassword}
+          value={valuePassword.confirmar_senha}
+          onSubmit={putPassword}
+          text={"Confirme a nova senha:"}
+        />
+        <Message
+          type={"fixed"}
+          display={{ display: changePassword.message ? "flex" : "none" }}
+          className={"Alerta"}
+          message={
+            "Os campos de senha devem ser iguais, favor digite novamente!"
+          }
+        />
+        <div className="Bottons">
+          <Gbutton
+            onClick={putPassword}
+            desactive={changePassword.submmit ? false : true}
+            disabled={changePassword.submmit ? false : true}
+          >
+            Mudar
+          </Gbutton>
+          <Button
+            onClick={() => {
+              setChangePassword({ ...changePassword, display: false });
             }}
           >
             Cancelar

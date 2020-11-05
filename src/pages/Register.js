@@ -218,7 +218,7 @@ const PagesRegister = () => {
         onSubmit={onSubmit}
         text={"CPF:"}
         maxLength={"14"}
-        placeholder={"Somente numeros"}
+        placeholder={"___.___.___-__"}
       />
       <Form
         name={"email"}
@@ -259,7 +259,11 @@ const PagesRegister = () => {
         text={"Idade:"}
       />
       <div className="Bottons">
-        <Button desactive={displayButton ? false : true} onClick={onSubmit}>
+        <Button
+          desactive={displayButton ? false : true}
+          onClick={onSubmit}
+          disabled={displayButton ? false : true}
+        >
           {userGoogle === null ? "Cadastrar" : "Finalizar Cadastro"}
         </Button>
       </div>

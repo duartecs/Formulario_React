@@ -117,7 +117,7 @@ const UserCard = ({ user, editCard, editPerfil, boxMessage, setToggle }) => {
         onSubmit={onSubmit}
         text={"CPF:"}
         maxLength={"14"}
-        placeholder={"Somente numeros"}
+        placeholder={"___.___.___-__"}
         className={"FormUser"}
         isDisable={!editCard}
       />

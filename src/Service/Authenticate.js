@@ -1,4 +1,4 @@
-import {firebaseApp} from "../Util/Firebase";
+import { firebaseApp } from "../Util/Firebase";
 import firebase from "firebase/app";
 import "firebase/auth";
 
@@ -70,7 +70,7 @@ const Authenticate = {
           console.log(err);
           reject(false);
         });
-   });
+    });
   },
 
   verificarEmail: () => {
@@ -92,14 +92,31 @@ const Authenticate = {
     });
   },
 
-  redefinirSenha: ({email}) => {
-    console.log("dentro do auth" + email)
+  redefinirSenha: ({ email }) => {
+    console.log("dentro do auth" + email);
     return new Promise((resolve, reject) => {
       firebase
         .auth()
         .sendPasswordResetEmail(email)
         .then(() => {
-          console.log("email enviado")
+          console.log("email enviado");
+          resolve(true);
+        })
+        .catch((error) => {
+          console.log(error);
+          reject(false);
+        });
+    });
+  },
+
+  mudarSenha: ({senha}) => {
+    console.log(senha)
+    return new Promise((resolve, reject) => {
+      firebase
+        .auth()
+        .currentUser.updatePassword(senha)
+        .then(() => {
+          console.log("senha alterada");
           resolve(true);
         })
         .catch((error) => {
